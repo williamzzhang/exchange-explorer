@@ -2,7 +2,7 @@ const User = require("../models/User");
 const router = require("express").Router();
 const bcrypt = require("bcrypt");
 
-// REGISTER
+// Register a new User (SEND POST Method)
 router.post("/register", async (req, res) => {
   try {
     // Generate new password
@@ -25,25 +25,25 @@ router.post("/register", async (req, res) => {
   }
 });
 
-// //LOGIN
-// router.post("/login", async (req, res) => {
-//   try {
-//     // Generate new password
-//     const user = await User.findOne({ username: req.body.username });
-//     !user && res.status(400).json("Wrong username or password");
+// Login to an existing User
+router.post("/login", async (req, res) => {
+  try {
+    // Find the user
+    const user = await User.findOne({username:req.body.username});
+    !user && res.status(400).json("Wrong username or password!");
 
-//     // Validate password
-//     const validPassword = await bcrypt.compare(
-//       req.body.password,
-//       user.password
-//     );
-//     !validPassword && res.status(400).json("Wrong username or password");
+    // Validate password
+    const validPassword = await bcrypt.compare(
+        req.body.password, 
+        user.password
+    );
+    !validPassword && res.status(400).json("Wrong username or password!");
 
-//     // Send response
-//     res.status(200).json({ _id: user._id, username: user.username });
-//   } catch (err) {
-//     res.status(500).json(err);
-//   }
-// });
+    // Send result
+    res.status(200).json({_id:user._id, username: user.username});
+  } catch (err) {
+    res.status(500).json(err);
+  }
+});
 
 module.exports = router;
