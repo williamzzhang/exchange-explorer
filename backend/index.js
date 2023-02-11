@@ -8,6 +8,8 @@ const userRoute = require("./routes/users");
 dotenv.config();
 app.use(express.json())
 
+var cors = require('cors')
+app.use(cors());
 
 mongoose.set("strictQuery", true);
 mongoose
