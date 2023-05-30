@@ -59,7 +59,7 @@ function App() {
         >
           <Room
             style={{ 
-              color: currentUser === p.username ? "tomato" : "slateblue", 
+              color: currentUser === p.username ? "crimson" : "darkcyan", 
               cursor:"pointer"
             }}
           />
