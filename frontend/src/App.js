@@ -35,8 +35,16 @@ function App() {
   };
 
   const handleAddClick = (e) => {
-    console.log(e);
-  }
+    // console.log(e);
+
+    const longitude  = e.lngLat.lng;
+    const latitude  = e.lngLat.lat;
+
+    setNewPlace({
+      lat: latitude,
+      long: longitude,
+    });
+  };
 
   return (
     <Map
@@ -93,14 +101,17 @@ function App() {
         )}
       </>
       ))}
-      {/* <Popup 
-          latitude={}
-          longitude={}
+      {newPlace && (      
+        <Popup 
+          latitude={newPlace.lat}
+          longitude={newPlace.long}
           closeButton={true}
           closeOnClick={false}
-          onClose={()=>setCurrentPlaceId(null)}
+          onClose={()=>setNewPlace(null)}
           anchor="left">
-        </Popup> */}
+          hello
+        </Popup>
+      )}
     </Map>
   );
 }
