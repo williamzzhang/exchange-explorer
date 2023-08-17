@@ -146,6 +146,7 @@ function App() {
           <div>
             <form>
               <label>Title</label>
+              <input placeholder='Enter a title'/>
               <label>Review</label>
               <textarea placeholder='Say something about this place'/>
               <label>Rating</label>
