@@ -13,12 +13,15 @@ const MAPBOX_TOKEN = process.env.REACT_APP_MAPBOX; // Set your mapbox token here
 
 function App() {
   
-  const currentUser = "Liyarui";
+  const currentUsername = "Liyarui";
   console.log("App started");
   const [pins, setPins] = 	useState([]);
   // const [showPopup, setShowPopup] = useState(null);
   const [currentPlaceId, setCurrentPlaceId] = useState(null);
   const [newPlace, setNewPlace] = useState(null);
+  const [title, setTitle] = useState(null);
+  const [description, setDesc] = useState(null);
+  const [rating, setRating] = useState(0);
   const [viewState, setViewState] = useState({
       latitude: 47,
       longitude: 17,
@@ -70,6 +73,26 @@ function App() {
     // });
   };
 
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    const newPin = {
+      username: currentUsername,
+      title,
+      description,
+      rating,
+      lat:newPlace.lat,
+      long:newPlace.long,
+    }
+
+    try {
+      const res = await axios.post("http://localhost:8800/api/pins", newPin);
+      setPins([...pins, res.data])
+      setNewPlace(null)
+    } catch (error) {
+      console.log(error)
+    }
+  };
+
   return (
     <Map
       // {...viewState}
@@ -99,7 +122,7 @@ function App() {
             style={{ 
               fontSize: 7 * viewState.zoom,
               color: 
-                currentUser === p.username ? "crimson" : "darkcyan", 
+                currentUsername === p.username ? "crimson" : "darkcyan", 
               cursor:"pointer"
             }}
             onClick={()=>handleMarkerClick(p._id, p.lat, p.long, viewState)}
@@ -144,20 +167,26 @@ function App() {
           anchor="left"
         >
           <div>
-            <form>
+            <form onSubmit={handleSubmit}>
               <label>Title</label>
-              <input placeholder='Enter a title'/>
+              <input 
+                placeholder='Enter a title' 
+                onChange={(e) => setTitle(e.target.value)}
+                />
               <label>Review</label>
-              <textarea placeholder='Say something about this place'/>
+              <textarea 
+                placeholder='Say something about this place'
+                onChange={(e) => setDesc(e.target.value)}
+              />
               <label>Rating</label>
-              <select>
+              <select onChange={(e) => setRating(e.target.value)}>
                 <option value="1">1</option>
                 <option value="2">2</option>
                 <option value="3">3</option>
                 <option value="4">4</option>
                 <option value="5">5</option>
               </select>
-              <button className='submitButton' type="submit">Add Pin</button>
+              <button className= "submitButton" type="submit">Add Pin</button>
             </form>
           </div>
         </Popup>
