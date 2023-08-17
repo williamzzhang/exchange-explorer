@@ -2,7 +2,7 @@
 import * as React from 'react';
 import { useEffect, useState } from "react";
 import {render} from 'react-dom';
-import Map, {Marker, Popup} from 'react-map-gl';
+import Map, {Marker, Popup, NavigationControl, ScaleControl, AttributionControl, GeolocateControl} from 'react-map-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { Star, Room } from '@material-ui/icons';
 import './App.css';
@@ -12,11 +12,18 @@ import {format} from 'timeago.js'
 const MAPBOX_TOKEN = process.env.REACT_APP_MAPBOX; // Set your mapbox token here
 
 function App() {
+  
   const currentUser = "Liyarui";
   console.log("App started");
   const [pins, setPins] = 	useState([]);
+  // const [showPopup, setShowPopup] = useState(null);
   const [currentPlaceId, setCurrentPlaceId] = useState(null);
   const [newPlace, setNewPlace] = useState(null);
+  const [viewState, setViewState] = useState({
+      latitude: 47,
+      longitude: 17,
+      zoom: 4,
+  });
   useEffect(() => {
     const getPins = async () => {
       try {
@@ -30,8 +37,9 @@ function App() {
     getPins();
   }, []);
 
-  const handleMarkerClick = (id) => {
+  const handleMarkerClick = (id, lat, long, viewState) => {
     setCurrentPlaceId(id);
+    setViewState({ ...viewState, latitude: lat, longitude: long });
   };
 
   const handleAddClick = (e) => {
@@ -46,30 +54,55 @@ function App() {
     });
   };
 
+  const handleGeoLocate = (e) => {
+    console.log(e);
+
+    const longitude  = e.coords.longitude;
+    const latitude  = e.coords.latitude;
+
+    console.log(latitude)
+    console.log(longitude)
+
+    // setShowPopup({
+      
+    //   lat: latitude,
+    //   long: longitude,
+    // });
+  };
+
   return (
     <Map
-      initialViewState={{
-        latitude: 46.8,
-        longitude: 17.4,
-        zoom: 4
-      }}
+      // {...viewState}
+      initialViewState={viewState}
       mapboxAccessToken={MAPBOX_TOKEN}
       style={{width: "100vw", height: "100vh"}}
       mapStyle="mapbox://styles/mapbox/streets-v12"
       onDblClick={handleAddClick}
     >
+      <NavigationControl/>
+      <ScaleControl />
+      <GeolocateControl 
+        onGeolocate={handleGeoLocate}
+        // onError={}
+      />
+      <AttributionControl customAttribution="Built by William Zhang " />
+
       {pins.map(p =>(   
       <>   
         <Marker
           latitude={p.lat}
           longitude={p.long}
-          onClick={()=>handleMarkerClick(p._id)}
+          offsetLeft={-3.5 * viewState.zoom}
+          offsetTop={-7 * viewState.zoom}
         >
           <Room
             style={{ 
-              color: currentUser === p.username ? "crimson" : "darkcyan", 
+              fontSize: 7 * viewState.zoom,
+              color: 
+                currentUser === p.username ? "crimson" : "darkcyan", 
               cursor:"pointer"
             }}
+            onClick={()=>handleMarkerClick(p._id, p.lat, p.long, viewState)}
           />
         </Marker>
         {p._id === currentPlaceId && (
@@ -108,10 +141,34 @@ function App() {
           closeButton={true}
           closeOnClick={false}
           onClose={()=>setNewPlace(null)}
-          anchor="left">
-          hello
+          anchor="left"
+        >
+          <div>
+            <form>
+              <label>Title</label>
+              <label>Review</label>
+              <textarea placeholder='Say something about this place'/>
+              <label>Rating</label>
+              <select>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+              </select>
+              <button className='submitButton' type="submit">Add Pin</button>
+            </form>
+          </div>
         </Popup>
       )}
+      {/* {showPopup && (
+        <Popup 
+          longitude={showPopup.long} 
+          latitude={showPopup.long}
+          anchor="top"
+          onClose={() => setShowPopup(null)}>
+          You are here
+        </Popup>)} */}
     </Map>
   );
 }
