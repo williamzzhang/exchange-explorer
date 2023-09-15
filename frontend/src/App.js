@@ -13,7 +13,7 @@ const MAPBOX_TOKEN = process.env.REACT_APP_MAPBOX; // Set your mapbox token here
 
 function App() {
   
-  const currentUsername = "Liyarui";
+  const currentUsername = "William";
   console.log("App started");
   const [pins, setPins] = 	useState([]);
   // const [showPopup, setShowPopup] = useState(null);
@@ -102,13 +102,18 @@ function App() {
       mapStyle="mapbox://styles/mapbox/streets-v12"
       onDblClick={handleAddClick}
     >
-      <NavigationControl/>
-      <ScaleControl />
+      <AttributionControl 
+        customAttribution="Built by William Zhang"
+        position='bottom-right' 
+      />
+      <NavigationControl position='bottom-right'/>
+      <ScaleControl position='bottom-left'/>
       <GeolocateControl 
         onGeolocate={handleGeoLocate}
+        position='bottom-right'
         // onError={}
       />
-      <AttributionControl customAttribution="Built by William Zhang " />
+
 
       {pins.map(p =>(   
       <>   
@@ -143,11 +148,7 @@ function App() {
             <p className='description'>{p.description}</p>
             <label>Rating</label>
             <div className='stars'>
-              <Star className='star'/>
-              <Star className='star'/>
-              <Star className='star'/>
-              <Star className='star'/>
-              <Star className='star'/>
+              {Array(p.rating).fill(<Star className='star'/>)}
             </div>
             <label>Information</label>
             <span className='username'>Created by <b>{p.username}</b></span>
@@ -191,6 +192,11 @@ function App() {
           </div>
         </Popup>
       )}
+      <button className='button logout'>Log out</button>
+      <div className='buttons'>
+        <button className='button login'>Login</button>
+        <button className='button register'>Register</button>
+      </div>
       {/* {showPopup && (
         <Popup 
           longitude={showPopup.long} 
